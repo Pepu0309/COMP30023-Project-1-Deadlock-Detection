@@ -20,7 +20,11 @@
  * 1. an int variable to represent the nodeType which is defined by constants PROCESS_NODE and FILE_NODE
  * 2. an unsigned int representing the ID of the node
  * 3. a pointer to another RAGNode which represents the dependency to another node (description in the struct body).
- * 4. an int variable representing the times this node has been requested (relevant for files). */
+ *    This implicitly creates an adjacency list for the resource allocation graph to be used in deadlock detection.
+ * 4. an int variable representing the times this node has been requested (relevant for files).
+ * 5. an int variable which is either BOOL_TRUE or BOOL_FALSE and determines if a node has been visited before by
+ *    the DFS function visitNode.
+ * 6. an int variable which determines which iteration of the DFS call this node was visited on. */
 typedef struct RAGNode RAGNode_t;
 struct RAGNode {
     int nodeType;
@@ -34,6 +38,10 @@ struct RAGNode {
     /* Used in calculating minimum execution time. The variable determines how many processes are requesting a certain
      * file. This is the n in the formula described in the calculateExecutionTime function. */
     int numRequests;
+
+    int visited;
+
+    int numIterationOfDFSCall;
 };
 
 /* Struct which is a linked list node that points to it's corresponding RAGNode and has a pointer to the next
@@ -52,5 +60,6 @@ struct hashTableBucket {
     linkedListNode_t *tail;
 };
 
+void visitNode(RAGNode_t *nodeToVisit, int *isDeadlocked, RAGNode_t **nodeInCycle, int currentIterationOfDFS);
 
 #endif //COMP30023_PROJECT_1_NODE_H

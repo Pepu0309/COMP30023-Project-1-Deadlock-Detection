@@ -4,14 +4,23 @@
  * as a linked list node that points to it. The linked list node is then inserted in the hash table. */
 RAGNode_t *createNode(hashTableBucket_t hashTable[], unsigned int newNodeID, unsigned int newNodeType) {
 
+    /* Allocate space for the new node and assign the ID and Type. Requests is set to 0 and visited set to BOOL_FALSE
+     * (calloc should do the same but just in case). */
     RAGNode_t *thisNode = (RAGNode_t *) calloc (1, sizeof(RAGNode_t));
+
     thisNode->nodeID = newNodeID;
     thisNode->nodeType = newNodeType;
-    thisNode->numRequests = 0;
 
+    thisNode->numRequests = 0;
+    thisNode->visited = BOOL_FALSE;
+
+    /* Linked list node is created and all it's pointers are initialised to null through calloc. The linked list
+     * node is then assigned to point to the newly created RAG node. */
     linkedListNode_t *newLLNode = (linkedListNode_t *) calloc (1, sizeof(linkedListNode_t));
     newLLNode->RAGNode = thisNode;
 
+    /* Node creation is done, the new linked list node, pointing to the new corresponding RAG node is inserted
+     * into the hash table. */
     hashTableInsert(&(hashTable[newNodeID%NUM_BUCKETS]), newLLNode);
 
     return thisNode;

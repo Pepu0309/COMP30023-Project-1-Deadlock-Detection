@@ -48,6 +48,15 @@ int main(int argc, char **argv) {
         int minExecutionTime = calculateExecutionTime(hashTable);
         printf("Execution time %d\n", minExecutionTime);
     } else {
+        /* Find the deadlocks according to project spec */
+        int numDeadlocks = 0;
+        detectDeadlocks(hashTable, &numDeadlocks);
+
+        if(numDeadlocks >= 1) {
+            printf("Deadlock detected\n");
+        } else {
+            printf("No deadlocks\n");
+        }
     }
 
     if(processAllocationFlag) {
@@ -142,4 +151,49 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
     return maxNumRequests+ACCESS_TIME_DELAY;
 }
 
+/* Goes through the hash table and calls the visitNode recursive Depth First Search (DFS) function to find cycles
+ * in the resource allocation graph. If a cycle is found, then there is a deadlock. For more details on criteria of
+ * a cycle, refer to visitNode function in node.c file. */
+void detectDeadlocks(hashTableBucket_t hashTable[], int *numDeadlocks) {
 
+    /* Initialise some variables to be used for traversing the hash table */
+    linkedListNode_t *curLLNode;
+    RAGNode_t *nodeInCycle = NULL;
+
+    /* By default, assume there is no deadlock. We also start at 0 as the current iteration of the DFS call to track
+     * which visitNode DFS call a node was visited on. For details of what the iteration of the DFS call is used
+     * for, refer to visitNode function at node.c */
+    int isDeadlocked = BOOL_FALSE;
+    unsigned int currentIterationOfDFS = 0;
+
+
+    /* Traverse through the hash table and call the recursive visitNode DFS function on any unvisited process nodes.
+     * If the visitNode function exists and found a deadlock and a node not in a cycle associated with it, there
+     * is a deadlock. */
+    for(int i = 0; i < NUM_BUCKETS; i++) {
+        curLLNode = hashTable[i].head;
+
+        while (curLLNode != NULL) {
+            /* We are only concerned with calling DFS on an unvisited process node in the hash table as a deadlock
+             * only happens a deadlock if the file a process is waiting for, is locked by another process. For a
+             * thorough explanation, refer to the visitNode function in node.c file. */
+            if(curLLNode->RAGNode->visited == BOOL_FALSE && curLLNode->RAGNode->nodeType == PROCESS_NODE) {
+                visitNode(curLLNode->RAGNode, &isDeadlocked, &nodeInCycle, currentIterationOfDFS);
+
+                /* Increment the counter for the number of deadlocks when a deadlock is found for Task 4 */
+                if(isDeadlocked == DEADLOCK_DETECTED && nodeInCycle != NULL) {
+                    (*numDeadlocks)++;
+                }
+
+                /* At this point we know that there was a call to the visitNode (DFS) function and as such
+                 * the counter tracking the current iteration of the DFS is incremented. */
+                currentIterationOfDFS++;
+            }
+            /* Set everything back to default values as if there was no deadlock for the next iteration of the
+             * DFS call which starts from another unvisited process node in the hash table. */
+            isDeadlocked = BOOL_FALSE;
+            nodeInCycle = NULL;
+            curLLNode = curLLNode->next;
+        }
+    }
+}
