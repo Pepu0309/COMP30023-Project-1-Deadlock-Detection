@@ -29,9 +29,13 @@ RAGNode_t *createNode(hashTableBucket_t hashTable[], unsigned int newNodeID, uns
 /* Takes a pointer of a hash table bucket which is implemented as a linked list and inserts a linked list node into
  * the hash table bucket. */
 void hashTableInsert(hashTableBucket_t *bucketToInsert, linkedListNode_t *nodeToInsert) {
+    /* If the head pointer is null, this is the first insert into the hash table bucket. */
     if(bucketToInsert->head == NULL) {
         bucketToInsert->head = nodeToInsert;
         bucketToInsert->tail = nodeToInsert;
+    /* If not, then there is an existing node in this hash table bucket so go to the tail of this bucket
+     * and then add the new node by setting the next of the current tail to the new node to insert. Then the
+     * new node to insert will become the new tail of the bucket. */
     } else {
         bucketToInsert->tail->next = nodeToInsert;
         bucketToInsert->tail = nodeToInsert;

@@ -24,7 +24,9 @@
  * 4. an int variable representing the times this node has been requested (relevant for files).
  * 5. an int variable which is either BOOL_TRUE or BOOL_FALSE and determines if a node has been visited before by
  *    the DFS function visitNode.
- * 6. an int variable which determines which iteration of the DFS call this node was visited on. */
+ * 6. an int variable which determines which iteration of the DFS call this node was visited on (details of use is
+ *    described on visitNode function is node.c file).
+ * 7. an int variable which determines if a node is already in a cycle. */
 typedef struct RAGNode RAGNode_t;
 struct RAGNode {
     int nodeType;
@@ -41,7 +43,9 @@ struct RAGNode {
 
     int visited;
 
-    int numIterationOfDFSCall;
+    unsigned int numIterationOfDFSCall;
+
+    int foundToBeInCycle;
 };
 
 /* Struct which is a linked list node that points to it's corresponding RAGNode and has a pointer to the next
@@ -61,5 +65,7 @@ struct hashTableBucket {
 };
 
 void visitNode(RAGNode_t *nodeToVisit, int *isDeadlocked, RAGNode_t **nodeInCycle, int currentIterationOfDFS);
+
+void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, int *processToTerminateID);
 
 #endif //COMP30023_PROJECT_1_NODE_H

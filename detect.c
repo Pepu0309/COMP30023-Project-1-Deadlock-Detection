@@ -50,10 +50,24 @@ int main(int argc, char **argv) {
     } else {
         /* Find the deadlocks according to project spec */
         int numDeadlocks = 0;
-        detectDeadlocks(hashTable, &numDeadlocks);
 
+        /* Create a dynamic array for storing the smallest process ID of each deadlock (cycle). */
+        int *deadlockedProcessIDs = (int *)malloc(sizeof(int) * INITIAL_DEADLOCKED_PROCESSES);
+        assert(deadlockedProcessIDs != NULL);
+
+        detectDeadlocks(hashTable, &deadlockedProcessIDs, &numDeadlocks);
+
+        /* If there is 1 deadlock or more, the smallest process ID for each deadlock found is additionally sorted
+         * using insertion sort such that the process IDs are displayed in ascending order as indicated by
+         * the project spec. */
         if(numDeadlocks >= 1) {
             printf("Deadlock detected\n");
+            sortProcessIDs(&deadlockedProcessIDs, numDeadlocks);
+            printf("Terminate");
+            for(int i = 0; i < numDeadlocks; i++) {
+                printf(" %d", deadlockedProcessIDs[i]);
+            }
+            printf("\n");
         } else {
             printf("No deadlocks\n");
         }
@@ -154,7 +168,7 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
 /* Goes through the hash table and calls the visitNode recursive Depth First Search (DFS) function to find cycles
  * in the resource allocation graph. If a cycle is found, then there is a deadlock. For more details on criteria of
  * a cycle, refer to visitNode function in node.c file. */
-void detectDeadlocks(hashTableBucket_t hashTable[], int *numDeadlocks) {
+void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, int *numDeadlocks) {
 
     /* Initialise some variables to be used for traversing the hash table */
     linkedListNode_t *curLLNode;
@@ -165,6 +179,7 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int *numDeadlocks) {
      * for, refer to visitNode function at node.c */
     int isDeadlocked = BOOL_FALSE;
     unsigned int currentIterationOfDFS = 0;
+    int processToTerminateID;
 
 
     /* Traverse through the hash table and call the recursive visitNode DFS function on any unvisited process nodes.
@@ -180,8 +195,13 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int *numDeadlocks) {
             if(curLLNode->RAGNode->visited == BOOL_FALSE && curLLNode->RAGNode->nodeType == PROCESS_NODE) {
                 visitNode(curLLNode->RAGNode, &isDeadlocked, &nodeInCycle, currentIterationOfDFS);
 
-                /* Increment the counter for the number of deadlocks when a deadlock is found for Task 4 */
+                /* Increment the counter for the number of deadlocks when a deadlock is found for Task 4.
+                 * Additionally, whenever a deadlock/cycle is found, the program will go through the cycle
+                 * again to find the smallest process ID in the cycle to terminate and add it to a dynamic array
+                 * for sorting later. */
                 if(isDeadlocked == DEADLOCK_DETECTED && nodeInCycle != NULL) {
+                    findSmallestProcessIDToTerminate(nodeInCycle, &processToTerminateID);
+                    (*deadlockedProcessIDs)[*numDeadlocks] = processToTerminateID;
                     (*numDeadlocks)++;
                 }
 
@@ -194,6 +214,26 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int *numDeadlocks) {
             isDeadlocked = BOOL_FALSE;
             nodeInCycle = NULL;
             curLLNode = curLLNode->next;
+        }
+    }
+}
+
+/* Standard insertion sort algorithm implementation to sort the process IDs. The findSmallestProcessIDToTerminate
+ * already finds the smallest ID among the potential processes to terminate in a given cycle; this function
+ * additionally sorts those process IDs in ascending order to meet the requirements of the project spec. */
+void sortProcessIDs(int **deadlockedProcessIDs, int numDeadlocks) {
+    int j, temp;
+
+    for(int i = 1; i < numDeadlocks; i++) {
+        int curProcessID = (*deadlockedProcessIDs)[i];
+        j = i - 1;
+
+        while(j >= 0 && (*deadlockedProcessIDs)[j] > curProcessID) {
+            temp = (*deadlockedProcessIDs)[j+1];
+            (*deadlockedProcessIDs)[j+1] = (*deadlockedProcessIDs)[j];
+            (*deadlockedProcessIDs)[j] = temp;
+
+            j--;
         }
     }
 }

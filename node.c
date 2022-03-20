@@ -32,3 +32,30 @@ void visitNode(RAGNode_t *nodeToVisit, int *isDeadlocked, RAGNode_t **nodeInCycl
     }
 
 }
+
+/* Takes a RAG node which the visitNode function has determined to be in a cycle, go through the every process
+ * node of the cycle and find the smallest process ID. This will then be deemed to be the process to terminate
+ * in order to break the deadlock. */
+void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, int *processToTerminateID) {
+
+    RAGNode_t *curNode = startNodeInCycle;
+
+    /* By default, the ID of the process to terminate is the starting node in the cycle. This starting node
+     * is also marked by the program to be in a cycle. */
+    *processToTerminateID = startNodeInCycle->nodeID;
+    startNodeInCycle->foundToBeInCycle = BOOL_TRUE;
+
+    /* Traverses the cycle and finds the smallest ID of the potential processes to terminate to solve the
+     * given deadlock. The program traverses the cycle by going to the next process node until it reaches the
+     * starting node. It also marks each node to be in a cycle. */
+    do {
+        if(curNode->dependencyTo->dependencyTo != NULL) {
+            curNode = curNode->dependencyTo->dependencyTo;
+        }
+        if((curNode->nodeID) < *processToTerminateID) {
+            *processToTerminateID = curNode->nodeID;
+        }
+        curNode->foundToBeInCycle = BOOL_TRUE;
+    } while (curNode != startNodeInCycle);
+
+}
