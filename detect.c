@@ -45,6 +45,8 @@ int main(int argc, char **argv) {
     /* If the execution time flag -e was given as an argument, calculate the minimum execution time
      * of the processes; otherwise, detect deadlocks in the processes. */
     if(executionTimeFlag) {
+        int minExecutionTime = calculateExecutionTime(hashTable);
+        printf("Execution time %d\n", minExecutionTime);
     } else {
         /* to be implemented. */
     }
@@ -109,7 +111,40 @@ void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numPr
 }
 
 
+/* The minimum execution time can be given my the formula n+1.
 
+n is the maximum number of times a single given file is requested by a process
+in the system. As such, the process will need to take a minimum of n time units
+for the most requested file to be accessed by all the processes requesting as one
+and only one process will only be able to access that same requested file at any
+given time.
+
+Files locked at time = 0 are being finished processed on at time = 1. With that in
+mind, only at time = 1 or above can the files being requested be accessed and used
+by a process. To finish processing the files requires 1 time unit. For example,
+file 1 is requested 3 times (n = 2), first access is at time = 1, it finishes
+getting processed at time 2 and at the same  Hence, an extra time unit is added to the
+number of times a file is requested . */
+int calculateExecutionTime(hashTableBucket_t hashTable[]) {
+    int maxNumRequests = 0;
+    linkedListNode_t *curLLNode;
+    int curNumRequests;
+
+    /* Go through all the nodes to determine the max number of requests of any given node (only files matter in
+     * this case but access time to check the type is the same anyway so just check the requests of any node). */
+    for(int i = 0; i < NUM_BUCKETS; i++) {
+        curLLNode = hashTable[i].head;
+        while (curLLNode != NULL) {
+            if((curNumRequests = curLLNode->RAGNode->numRequests) > maxNumRequests) {
+                maxNumRequests = curNumRequests;
+            }
+            curLLNode = curLLNode->next;
+        }
+    }
+
+    /* Add 1 as described above to get the minimum execution time of the system. */
+    return maxNumRequests+ACCESS_TIME_DELAY;
+}
 
 
 

@@ -10,8 +10,14 @@
 #define EXECUTION_TIME_FLAG "-e"
 #define PROCESS_ALLOCATION_FLAG "-c"
 
+#define ACCESS_TIME_DELAY 1
+
+#define INITIAL_DEADLOCKED_PROCESSES 5
+
 #include "hashtable.h"
 
 void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles);
+
+int calculateExecutionTime(hashTableBucket_t hashTable[]);
 
 #endif //COMP30023_PROJECT_1_DETECT_H

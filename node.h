@@ -20,7 +20,7 @@
  * 1. an int variable to represent the nodeType which is defined by constants PROCESS_NODE and FILE_NODE
  * 2. an unsigned int representing the ID of the node
  * 3. a pointer to another RAGNode which represents the dependency to another node (description in the struct body).
- * */
+ * 4. an int variable representing the times this node has been requested (relevant for files). */
 typedef struct RAGNode RAGNode_t;
 struct RAGNode {
     int nodeType;
@@ -30,6 +30,10 @@ struct RAGNode {
      * A file node has a dependency to a process node as it is locked by it.
      * This creates a model similar to the Resource Allocation Graphs introduced in the lecture. */
     RAGNode_t *dependencyTo;
+
+    /* Used in calculating minimum execution time. The variable determines how many processes are requesting a certain
+     * file. This is the n in the formula described in the calculateExecutionTime function. */
+    int numRequests;
 };
 
 /* Struct which is a linked list node that points to it's corresponding RAGNode and has a pointer to the next
