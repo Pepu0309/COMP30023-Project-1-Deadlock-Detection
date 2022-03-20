@@ -48,7 +48,6 @@ int main(int argc, char **argv) {
         int minExecutionTime = calculateExecutionTime(hashTable);
         printf("Execution time %d\n", minExecutionTime);
     } else {
-        /* to be implemented. */
     }
 
     if(processAllocationFlag) {
@@ -76,23 +75,20 @@ void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numPr
      * according to their dependencies. */
     while(fscanf(fp, "%u %u %u", &processID, &lockedFileID, &requiredFileID) == 3) {
 
-        processNode = createNode(hashTable, processID, PROCESS_NODE,
-                                         numProcess, numFiles);
+        processNode = createNode(hashTable, processID, PROCESS_NODE);
         (*numProcess)++;
 
 
         /* For both the file nodes (locked file and required file), we search the hashTable for a duplicate node. If
          * we do find one, then the function will return the node. If we don't find one, the function returns NULL
          * and the program then creates a new node based on the parameters. */
-        if((lockedFileNode = searchDuplicate(hashTable, lockedFileID, FILE_NODE, *numProcess, *numFiles)) == NULL) {
-            lockedFileNode = createNode(hashTable, lockedFileID, FILE_NODE,
-                               numProcess, numFiles);
+        if((lockedFileNode = searchDuplicate(hashTable, lockedFileID, FILE_NODE)) == NULL) {
+            lockedFileNode = createNode(hashTable, lockedFileID, FILE_NODE);
             (*numFiles)++;
         }
 
-        if((requiredFileNode = searchDuplicate(hashTable, requiredFileID, FILE_NODE, *numProcess, *numFiles)) == NULL) {
-            requiredFileNode = createNode(hashTable, requiredFileID, FILE_NODE,
-                               numProcess, numFiles);
+        if((requiredFileNode = searchDuplicate(hashTable, requiredFileID, FILE_NODE)) == NULL) {
+            requiredFileNode = createNode(hashTable, requiredFileID, FILE_NODE);
             (*numFiles)++;
         }
 
@@ -145,6 +141,5 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
     /* Add 1 as described above to get the minimum execution time of the system. */
     return maxNumRequests+ACCESS_TIME_DELAY;
 }
-
 
 

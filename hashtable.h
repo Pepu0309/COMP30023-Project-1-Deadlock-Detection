@@ -5,8 +5,7 @@
 
 #include "node.h"
 
-RAGNode_t *createNode(hashTableBucket_t hashTable[], unsigned int newNodeID, unsigned int newNodeType,
-                      int *numProcess, int *numFiles);
+RAGNode_t *createNode(hashTableBucket_t hashTable[], unsigned int newNodeID, unsigned int newNodeType);
 
 void hashTableInsert(hashTableBucket_t *bucketToInsert, linkedListNode_t *nodeToInsert);
 

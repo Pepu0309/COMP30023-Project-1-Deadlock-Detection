@@ -20,4 +20,6 @@ void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numPr
 
 int calculateExecutionTime(hashTableBucket_t hashTable[]);
 
+void detectDeadlocks(hashTableBucket_t hashTable[], int *numDeadlocks);
+
 #endif //COMP30023_PROJECT_1_DETECT_H
