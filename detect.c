@@ -51,10 +51,11 @@ int main(int argc, char **argv) {
         /* Find the deadlocks according to project spec if execution time flag is not given. */
         int numDeadlocks = 0;
         /* Create a dynamic array for storing the smallest process ID of each deadlock (cycle). */
-        int *deadlockedProcessIDs = (int *)malloc(sizeof(int) * INITIAL_DEADLOCKED_PROCESSES);
+        int curMaxNumProcessIDs = INITIAL_DEADLOCKED_PROCESSES;
+        int *deadlockedProcessIDs = (int *)malloc(sizeof(int) * curMaxNumProcessIDs);
         assert(deadlockedProcessIDs != NULL);
 
-        detectDeadlocks(hashTable, &deadlockedProcessIDs, &numDeadlocks);
+        detectDeadlocks(hashTable, &deadlockedProcessIDs, &numDeadlocks, &curMaxNumProcessIDs);
 
         /* If there is 1 deadlock or more, the smallest process ID for each deadlock found is additionally sorted
          * using insertion sort such that the process IDs are displayed in ascending order as indicated by
@@ -70,6 +71,8 @@ int main(int argc, char **argv) {
         } else {
             printf("No deadlocks\n");
         }
+
+        free(deadlockedProcessIDs);
     }
 
     if(processAllocationFlag) {
@@ -168,7 +171,8 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
 /* Goes through the hash table and calls the visitNode recursive Depth First Search (DFS) function to find cycles
  * in the resource allocation graph. If a cycle is found, then there is a deadlock. For more details on criteria of
  * a cycle, refer to visitNode function in node.c file. */
-void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, int *numDeadlocks) {
+void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, int *numDeadlocks,
+                     int *curMaxNumProcessIDs) {
 
     /* Initialise some variables to be used for traversing the hash table */
     linkedListNode_t *curLLNode;
@@ -201,6 +205,7 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, 
                  * for sorting later. */
                 if(isDeadlocked == DEADLOCK_DETECTED && nodeInCycle != NULL) {
                     findSmallestProcessIDToTerminate(nodeInCycle, &processToTerminateID);
+                    reallocCheckArray(deadlockedProcessIDs, numDeadlocks, curMaxNumProcessIDs);
                     (*deadlockedProcessIDs)[*numDeadlocks] = processToTerminateID;
                     (*numDeadlocks)++;
                 }
@@ -214,26 +219,6 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, 
             isDeadlocked = false;
             nodeInCycle = NULL;
             curLLNode = curLLNode->next;
-        }
-    }
-}
-
-/* Standard insertion sort algorithm implementation to sort the process IDs. The findSmallestProcessIDToTerminate
- * already finds the smallest ID among the potential processes to terminate in a given cycle; this function
- * additionally sorts those process IDs in ascending order to meet the requirements of the project spec. */
-void sortProcessIDs(int **deadlockedProcessIDs, int numDeadlocks) {
-    int j, temp;
-
-    for(int i = 1; i < numDeadlocks; i++) {
-        int curProcessID = (*deadlockedProcessIDs)[i];
-        j = i - 1;
-
-        while(j >= 0 && (*deadlockedProcessIDs)[j] > curProcessID) {
-            temp = (*deadlockedProcessIDs)[j+1];
-            (*deadlockedProcessIDs)[j+1] = (*deadlockedProcessIDs)[j];
-            (*deadlockedProcessIDs)[j] = temp;
-
-            j--;
         }
     }
 }

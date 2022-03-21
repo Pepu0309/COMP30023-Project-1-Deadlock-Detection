@@ -15,12 +15,14 @@
 #define INITIAL_DEADLOCKED_PROCESSES 5
 
 #include "hashtable.h"
+#include "array.h"
 
 void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles);
 
 int calculateExecutionTime(hashTableBucket_t hashTable[]);
 
-void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, int *numDeadlocks);
+void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, int *numDeadlocks,
+                     int *curMaxNumProcessIDs);
 
 void sortProcessIDs(int **deadlockedProcessIDs, int numDeadlocks);
 
