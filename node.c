@@ -44,7 +44,6 @@ void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, int *processT
     /* By default, the ID of the process to terminate is the starting node in the cycle. This starting node
      * is also marked by the program to be in a cycle. */
     *processToTerminateID = startNodeInCycle->nodeID;
-    startNodeInCycle->foundToBeInCycle = true;
 
     /* Traverses the cycle and finds the smallest ID of the potential processes to terminate to solve the
      * given deadlock. The program traverses the cycle by going to the next process node until it reaches the
@@ -56,7 +55,6 @@ void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, int *processT
         if((curNode->nodeID) < *processToTerminateID) {
             *processToTerminateID = curNode->nodeID;
         }
-        curNode->foundToBeInCycle = true;
     } while (curNode != startNodeInCycle);
 
 }

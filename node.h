@@ -24,7 +24,7 @@
  *    the DFS function visitNode.
  * 6. an int variable which determines which iteration of the DFS call this node was visited on (details of use is
  *    described on visitNode function is node.c file).
- * 7. an int variable which determines if a node is already in a cycle. */
+ *  */
 typedef struct RAGNode RAGNode_t;
 struct RAGNode {
     int nodeType;
@@ -42,8 +42,6 @@ struct RAGNode {
     bool visited;
 
     unsigned int numIterationOfDFSCall;
-
-    int foundToBeInCycle;
 };
 
 /* Struct which is a linked list node that points to it's corresponding RAGNode and has a pointer to the next
