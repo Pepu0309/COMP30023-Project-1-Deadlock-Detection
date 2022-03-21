@@ -135,22 +135,29 @@ void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numPr
 
 /* The minimum execution time can be given my the formula n+1.
 
-n is the maximum number of times a single given file is requested by a process
-in the system. As such, the process will need to take a minimum of n time units
-for the most requested file to be accessed by all the processes requesting as one
-and only one process will only be able to access that same requested file at any
-given time.
+n is the maximum number of times a single given file is requested by a process in the system. As such, the process
+will need to take a minimum of n time units for the most requested file to be accessed by all the processes
+requesting as one and only one process will only be able to access that same requested file at any given time.
 
-Files locked at time = 0 are being finished processed on at time = 1. With that in
-mind, only at time = 1 or above can the files being requested be accessed and used
-by a process. To finish processing the files requires 1 time unit. For example,
-file 1 is requested 3 times (n = 2), first access is at time = 1, it finishes
-getting processed at time 2 and at the same  Hence, an extra time unit is added to the
-number of times a file is requested . */
+Files locked at time = x are being finished processed on at time = x+1. Furthermore, only at time = 1
+or above can the files being requested be accessed and used by a process. As such, The process then
+also needs 1 more time unit to be finished with processing that file and unlocking it.
+
+With this in mind, we move to an example. File 1 is requested 3 times (n = 2), first access is at time = 1,
+it finishes getting processed at time = 2 and at the same time gets released and accessed by another file.
+At time = 3,the 2nd process finishes with the file, the file gets released and accessed by the 3rd and final process.
+At time = 4, the 3rd and final process finishes it's processing with the file and releases it. By this point,
+every other file that has been requested less will have finished; every other file that has been requested
+the same number of times will finish on the same time.
+
+Hence, an extra time unit is added to the number of times a file is requested .
+
+Edge case: While the formula works for general cases, the formula does not work when
+the input resource file is blank so that has to be dealt with separately. */
 int calculateExecutionTime(hashTableBucket_t hashTable[]) {
-    int maxNumRequests = 0;
+    int curNumRequests, maxNumRequests = 0;
     linkedListNode_t *curLLNode;
-    int curNumRequests;
+
 
     /* Go through all the nodes to determine the max number of requests of any given node (only files matter in
      * this case but access time to check the type is the same anyway so just check the requests of any node). */
@@ -164,8 +171,18 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
         }
     }
 
-    /* Add 1 as described above to get the minimum execution time of the system. */
-    return maxNumRequests+ACCESS_TIME_DELAY;
+    /* If maxNumRequests is larger than 0, there is at least 1 process and associated files in the system,
+     * and so we can use the general formula and dd 1 as described above to get the minimum execution time of
+     * the system. */
+    if(maxNumRequests > 0) {
+        return maxNumRequests+ACCESS_TIME_DELAY;
+    /* Else, the maxNumRequests stays at 0, and there are no files being requested in the system which then directly
+     * implies that there are no processes in the system, which then also implies that a blank input file
+     * has been given, so we deal with this edge case as described above and just return 0. */
+    } else {
+        return maxNumRequests;
+    }
+
 }
 
 /* Goes through the hash table and calls the visitNode recursive Depth First Search (DFS) function to find cycles
