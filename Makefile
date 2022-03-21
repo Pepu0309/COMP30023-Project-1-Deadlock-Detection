@@ -13,5 +13,5 @@ hashtable.o: hashtable.c hashtable.h
 array.o: array.c array.h
 	gcc -Wall -o array.o -c array.c -g
 
-clean: detect
+clean:
 	rm -f *.o detect
