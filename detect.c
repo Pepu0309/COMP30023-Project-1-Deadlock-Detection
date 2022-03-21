@@ -2,9 +2,9 @@
 
 int main(int argc, char **argv) {
 
-    int filenameFlag = BOOL_FALSE;
-    int executionTimeFlag = BOOL_FALSE;
-    int processAllocationFlag = BOOL_FALSE;
+    int filenameFlag = false;
+    int executionTimeFlag = false;
+    int processAllocationFlag = false;
 
     /* The number of nodes can be derived by adding numProcess and numFiles. */
     int numProcess = 0;
@@ -25,16 +25,16 @@ int main(int argc, char **argv) {
          * the resource file and that is parsed by calling the parseResourceFile function. */
         if(filenameFlag) {
             parseResourceFile(argv[i], hashTable, &numProcess, &numFiles);
-            filenameFlag = BOOL_FALSE;
+            filenameFlag = false;
         }
 
         /* Checks which of the 3 flags possible the current argument in argv is. */
         if(strcmp(argv[i], FILENAME_FLAG) == 0) {
-            filenameFlag = BOOL_TRUE;
+            filenameFlag = true;
         } else if (strcmp(argv[i], EXECUTION_TIME_FLAG) == 0){
-            executionTimeFlag = BOOL_TRUE;
+            executionTimeFlag = true;
         } else if (strcmp(argv[i], PROCESS_ALLOCATION_FLAG) == 0){
-            processAllocationFlag = BOOL_TRUE;
+            processAllocationFlag = true;
         }
     }
 
@@ -48,9 +48,8 @@ int main(int argc, char **argv) {
         int minExecutionTime = calculateExecutionTime(hashTable);
         printf("Execution time %d\n", minExecutionTime);
     } else {
-        /* Find the deadlocks according to project spec */
+        /* Find the deadlocks according to project spec if execution time flag is not given. */
         int numDeadlocks = 0;
-
         /* Create a dynamic array for storing the smallest process ID of each deadlock (cycle). */
         int *deadlockedProcessIDs = (int *)malloc(sizeof(int) * INITIAL_DEADLOCKED_PROCESSES);
         assert(deadlockedProcessIDs != NULL);
@@ -98,6 +97,7 @@ void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numPr
      * according to their dependencies. */
     while(fscanf(fp, "%u %u %u", &processID, &lockedFileID, &requiredFileID) == 3) {
 
+        /* Processes are distinct, so we don't need to search for duplicates. */
         processNode = createNode(hashTable, processID, PROCESS_NODE);
         (*numProcess)++;
 
@@ -116,7 +116,7 @@ void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numPr
         }
 
         /* Now we handle the dependencies of the resource nodes. A process node always has a dependency to the file
-         * it requires. The file being required also stores the number of time it is requested in the system to
+         * it requires. The file being required also stores the number of times it is requested in the system to
          * be used for calculating execution time. A locked file node always has a dependency to the process it
          * is locked by. Even if one of the nodes is a duplicate, this behaviour is intended to create the
          * resource allocation graph. */
@@ -177,7 +177,7 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, 
     /* By default, assume there is no deadlock. We also start at 0 as the current iteration of the DFS call to track
      * which visitNode DFS call a node was visited on. For details of what the iteration of the DFS call is used
      * for, refer to visitNode function at node.c */
-    int isDeadlocked = BOOL_FALSE;
+    int isDeadlocked = false;
     unsigned int currentIterationOfDFS = 0;
     int processToTerminateID;
 
@@ -192,7 +192,7 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, 
             /* We are only concerned with calling DFS on an unvisited process node in the hash table as a deadlock
              * only happens a deadlock if the file a process is waiting for, is locked by another process. For a
              * thorough explanation, refer to the visitNode function in node.c file. */
-            if(curLLNode->RAGNode->visited == BOOL_FALSE && curLLNode->RAGNode->nodeType == PROCESS_NODE) {
+            if(curLLNode->RAGNode->visited == false && curLLNode->RAGNode->nodeType == PROCESS_NODE) {
                 visitNode(curLLNode->RAGNode, &isDeadlocked, &nodeInCycle, currentIterationOfDFS);
 
                 /* Increment the counter for the number of deadlocks when a deadlock is found for Task 4.
@@ -211,7 +211,7 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, 
             }
             /* Set everything back to default values as if there was no deadlock for the next iteration of the
              * DFS call which starts from another unvisited process node in the hash table. */
-            isDeadlocked = BOOL_FALSE;
+            isDeadlocked = false;
             nodeInCycle = NULL;
             curLLNode = curLLNode->next;
         }

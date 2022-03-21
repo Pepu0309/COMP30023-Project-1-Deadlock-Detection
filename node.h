@@ -3,6 +3,7 @@
 
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdbool.h>
 #include <assert.h>
 
 #define DOUBLE_CUR_SPACE 2
@@ -22,7 +23,7 @@
  * 3. a pointer to another RAGNode which represents the dependency to another node (description in the struct body).
  *    This implicitly creates an adjacency list for the resource allocation graph to be used in deadlock detection.
  * 4. an int variable representing the times this node has been requested (relevant for files).
- * 5. an int variable which is either BOOL_TRUE or BOOL_FALSE and determines if a node has been visited before by
+ * 5. a bool variable which is either true or false and determines if a node has been visited before by
  *    the DFS function visitNode.
  * 6. an int variable which determines which iteration of the DFS call this node was visited on (details of use is
  *    described on visitNode function is node.c file).
@@ -41,7 +42,7 @@ struct RAGNode {
      * file. This is the n in the formula described in the calculateExecutionTime function. */
     int numRequests;
 
-    int visited;
+    bool visited;
 
     unsigned int numIterationOfDFSCall;
 
