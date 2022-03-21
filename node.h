@@ -8,9 +8,6 @@
 
 #define DOUBLE_CUR_SPACE 2
 
-#define BOOL_TRUE 1
-#define BOOL_FALSE 0
-
 #define PROCESS_NODE 0
 #define FILE_NODE 1
 
