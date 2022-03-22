@@ -17,7 +17,7 @@
 #include "hashtable.h"
 #include "array.h"
 
-void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles);
+void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles);
 
 int calculateExecutionTime(hashTableBucket_t hashTable[]);
 

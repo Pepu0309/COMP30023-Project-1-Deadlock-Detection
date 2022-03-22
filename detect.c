@@ -24,8 +24,10 @@ int main(int argc, char **argv) {
         /* If the filename flag is given, then the next argument in the argument vector is the filename for
          * the resource file and that is parsed by calling the parseResourceFile function. */
         if(filenameFlag) {
-            parseResourceFile(argv[i], hashTable, &numProcess, &numFiles);
+            FILE *fp = fopen(argv[i], "r");
+            parseResourceFile(fp, hashTable, &numProcess, &numFiles);
             filenameFlag = false;
+            fclose(fp);
         }
 
         /* Checks which of the 3 flags possible the current argument in argv is. */
@@ -87,9 +89,9 @@ int main(int argc, char **argv) {
 
 /* Parses the resource file and creates all the process and file nodes required and stores them in a hash table.
  * Also creates an implicit adjacency list using the dependencyTo attributes of the nodes. */
-void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles) {
+void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles) {
 
-    FILE *fp = fopen(filename, "r");
+
 
     unsigned int processID, lockedFileID, requiredFileID;
 
@@ -128,8 +130,6 @@ void parseResourceFile(char *filename, hashTableBucket_t hashTable[], int *numPr
         lockedFileNode->dependencyTo = processNode;
 
     }
-
-    fclose(fp);
 }
 
 
