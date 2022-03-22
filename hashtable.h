@@ -5,11 +5,11 @@
 
 #include "node.h"
 
-RAGNode_t *createNode(hashTableBucket_t hashTable[], unsigned int newNodeID, unsigned int newNodeType);
+RAGNode_t *createNode(hashTableBucket_t hashTable[], uint32_t newNodeID, uint32_t newNodeType);
 
 void hashTableInsert(hashTableBucket_t *bucketToInsert, linkedListNode_t *nodeToInsert);
 
-RAGNode_t *searchDuplicate(hashTableBucket_t hashTable[], unsigned int nodeID, unsigned int nodeType);
+RAGNode_t *searchDuplicate(hashTableBucket_t hashTable[], uint32_t nodeID, uint32_t nodeType);
 
 void freeHashTable(hashTableBucket_t hashTable[]);
 

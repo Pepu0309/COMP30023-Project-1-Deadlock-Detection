@@ -17,13 +17,13 @@
 #include "hashtable.h"
 #include "array.h"
 
-void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles);
+void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,  uint32_t *numFiles);
 
 int calculateExecutionTime(hashTableBucket_t hashTable[]);
 
-void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, int *numDeadlocks,
-                     int *curMaxNumProcessIDs);
+void detectDeadlocks(hashTableBucket_t hashTable[], uint32_t **deadlockedProcessIDs, uint32_t *numDeadlocks,
+                     uint32_t *curMaxNumProcessIDs);
 
-void sortProcessIDs(int **deadlockedProcessIDs, int numDeadlocks);
+void sortProcessIDs(uint32_t **deadlockedProcessIDs, uint32_t numDeadlocks);
 
 #endif //COMP30023_PROJECT_1_DETECT_H

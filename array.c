@@ -3,11 +3,11 @@
 /* Standard insertion sort algorithm implementation to sort the process IDs. The findSmallestProcessIDToTerminate
  * already finds the smallest ID among the potential processes to terminate in a given cycle; this function
  * additionally sorts those process IDs in ascending order to meet the requirements of the project spec. */
-void sortProcessIDs(int **deadlockedProcessIDs, int numDeadlocks) {
-    int j, temp;
+void sortProcessIDs(uint32_t **deadlockedProcessIDs, uint32_t numDeadlocks) {
+    uint32_t j, temp;
 
-    for(int i = 1; i < numDeadlocks; i++) {
-        int curProcessID = (*deadlockedProcessIDs)[i];
+    for(uint32_t i = 1; i < numDeadlocks; i++) {
+        uint32_t curProcessID = (*deadlockedProcessIDs)[i];
         j = i - 1;
 
         while(j >= 0 && (*deadlockedProcessIDs)[j] > curProcessID) {
@@ -20,10 +20,10 @@ void sortProcessIDs(int **deadlockedProcessIDs, int numDeadlocks) {
     }
 }
 
-void reallocCheckArray(int **deadlockedProcessIDs, int *numDeadlocks, int *curMaxNumProcessIDs) {
+void reallocCheckArray(uint32_t **deadlockedProcessIDs, uint32_t *numDeadlocks, uint32_t *curMaxNumProcessIDs) {
     if(*numDeadlocks >= *curMaxNumProcessIDs) {
         *curMaxNumProcessIDs *= 2;
-        *deadlockedProcessIDs = (int *) realloc (*deadlockedProcessIDs, *curMaxNumProcessIDs*sizeof(int));
+        *deadlockedProcessIDs = (uint32_t *) realloc (*deadlockedProcessIDs, *curMaxNumProcessIDs*sizeof(uint32_t));
         assert(*deadlockedProcessIDs != NULL);
     }
 }

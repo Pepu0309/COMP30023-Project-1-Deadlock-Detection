@@ -4,7 +4,7 @@
  * sets the visited attribute of the node to true and also sets the number of the iteration of DFS call this
  * node was visited on. This is so the function can find cycles as cycle are determined to be nodes which are
  * visited on the same iteration of DFS call. This is an alternative to the traditional stack approach. */
-void visitNode(RAGNode_t *nodeToVisit, int *isDeadlocked, RAGNode_t **nodeInCycle, int currentIterationOfDFS) {
+void visitNode(RAGNode_t *nodeToVisit, bool *isDeadlocked, RAGNode_t **nodeInCycle, uint32_t currentIterationOfDFS) {
 
     /* If this node was visited before but it's not in this current iteration of DFS, then we immediately ignore
      * this node and exit. */
@@ -12,7 +12,7 @@ void visitNode(RAGNode_t *nodeToVisit, int *isDeadlocked, RAGNode_t **nodeInCycl
         /* If the node was visited in the same iteration of DFS call, then a cycle has been found and the node that
          * is part of the cycle is passed back to the detectDeadlocks program through a pointer. */
         if(nodeToVisit->numIterationOfDFSCall == currentIterationOfDFS) {
-            *isDeadlocked = DEADLOCK_DETECTED;
+            *isDeadlocked = true;
             *nodeInCycle = nodeToVisit;
         }
         return;
@@ -37,7 +37,7 @@ void visitNode(RAGNode_t *nodeToVisit, int *isDeadlocked, RAGNode_t **nodeInCycl
 /* Takes a RAG node which the visitNode function has determined to be in a cycle, go through the every process
  * node of the cycle and find the smallest process ID. This will then be deemed to be the process to terminate
  * in order to break the deadlock. */
-void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, int *processToTerminateID) {
+void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, uint32_t *processToTerminateID) {
 
     RAGNode_t *curNode = startNodeInCycle;
 

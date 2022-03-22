@@ -2,13 +2,13 @@
 
 int main(int argc, char **argv) {
 
-    int filenameFlag = false;
-    int executionTimeFlag = false;
-    int processAllocationFlag = false;
+    bool filenameFlag = false;
+    bool executionTimeFlag = false;
+    bool processAllocationFlag = false;
 
     /* The number of nodes can be derived by adding numProcess and numFiles. */
-    int numProcess = 0;
-    int numFiles = 0;
+    uint32_t numProcess = 0;
+    uint32_t numFiles = 0;
 
     /* Creates a hash table which is an array of linked lists. Initialise the head and tails of the linked
      * lists to be NULL so they don't point to garbage values. */
@@ -51,10 +51,10 @@ int main(int argc, char **argv) {
         printf("Execution time %d\n", minExecutionTime);
     } else {
         /* Find the deadlocks according to project spec if execution time flag is not given. */
-        int numDeadlocks = 0;
+        uint32_t numDeadlocks = 0;
         /* Create a dynamic array for storing the smallest process ID of each deadlock (cycle). */
-        int curMaxNumProcessIDs = INITIAL_DEADLOCKED_PROCESSES;
-        int *deadlockedProcessIDs = (int *)malloc(sizeof(int) * curMaxNumProcessIDs);
+        uint32_t curMaxNumProcessIDs = INITIAL_DEADLOCKED_PROCESSES;
+        uint32_t *deadlockedProcessIDs = (uint32_t *)malloc(sizeof(uint32_t) * curMaxNumProcessIDs);
         assert(deadlockedProcessIDs != NULL);
 
         detectDeadlocks(hashTable, &deadlockedProcessIDs, &numDeadlocks, &curMaxNumProcessIDs);
@@ -89,11 +89,11 @@ int main(int argc, char **argv) {
 
 /* Parses the resource file and creates all the process and file nodes required and stores them in a hash table.
  * Also creates an implicit adjacency list using the dependencyTo attributes of the nodes. */
-void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], int *numProcess,  int *numFiles) {
+void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,  uint32_t *numFiles) {
 
 
 
-    unsigned int processID, lockedFileID, requiredFileID;
+    uint32_t processID, lockedFileID, requiredFileID;
 
     RAGNode_t *processNode, *lockedFileNode, *requiredFileNode;
 
@@ -158,7 +158,6 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
     int curNumRequests, maxNumRequests = 0;
     linkedListNode_t *curLLNode;
 
-
     /* Go through all the nodes to determine the max number of requests of any given node (only files matter in
      * this case but access time to check the type is the same anyway so just check the requests of any node). */
     for(int i = 0; i < NUM_BUCKETS; i++) {
@@ -188,8 +187,8 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
 /* Goes through the hash table and calls the visitNode recursive Depth First Search (DFS) function to find cycles
  * in the resource allocation graph. If a cycle is found, then there is a deadlock. For more details on criteria of
  * a cycle, refer to visitNode function in node.c file. */
-void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, int *numDeadlocks,
-                     int *curMaxNumProcessIDs) {
+void detectDeadlocks(hashTableBucket_t hashTable[], uint32_t **deadlockedProcessIDs, uint32_t *numDeadlocks,
+                     uint32_t *curMaxNumProcessIDs) {
 
     /* Initialise some variables to be used for traversing the hash table */
     linkedListNode_t *curLLNode;
@@ -198,9 +197,9 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, 
     /* By default, assume there is no deadlock. We also start at 0 as the current iteration of the DFS call to track
      * which visitNode DFS call a node was visited on. For details of what the iteration of the DFS call is used
      * for, refer to visitNode function at node.c */
-    int isDeadlocked = false;
-    unsigned int currentIterationOfDFS = 0;
-    int processToTerminateID;
+    bool isDeadlocked = false;
+    uint32_t currentIterationOfDFS = 0;
+    uint32_t processToTerminateID;
 
 
     /* Traverse through the hash table and call the recursive visitNode DFS function on any unvisited process nodes.
@@ -220,7 +219,7 @@ void detectDeadlocks(hashTableBucket_t hashTable[], int **deadlockedProcessIDs, 
                  * Additionally, whenever a deadlock/cycle is found, the program will go through the cycle
                  * again to find the smallest process ID in the cycle to terminate and add it to a dynamic array
                  * for sorting later. */
-                if(isDeadlocked == DEADLOCK_DETECTED && nodeInCycle != NULL) {
+                if(isDeadlocked == true && nodeInCycle != NULL) {
                     findSmallestProcessIDToTerminate(nodeInCycle, &processToTerminateID);
                     reallocCheckArray(deadlockedProcessIDs, numDeadlocks, curMaxNumProcessIDs);
                     (*deadlockedProcessIDs)[*numDeadlocks] = processToTerminateID;

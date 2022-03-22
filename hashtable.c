@@ -44,7 +44,7 @@ void hashTableInsert(hashTableBucket_t *bucketToInsert, linkedListNode_t *nodeTo
 /* Uses the hashing lookup property of a hash table to determine the linked list bucket to search for a duplicate
  * node and uses the parameters nodeID and nodeType to find said duplicate node and returns it if found. If no
  * duplicate node is found, NULL is return. */
-RAGNode_t *searchDuplicate(hashTableBucket_t hashTable[], unsigned int nodeID, unsigned int nodeType) {
+RAGNode_t *searchDuplicate(hashTableBucket_t hashTable[], uint32_t nodeID, uint32_t nodeType) {
 
     /* Find the linked list to start the search for the duplicate node at and start at the head of the linked list. */
     hashTableBucket_t *bucketToSearch = (&hashTable[nodeID%NUM_BUCKETS]);

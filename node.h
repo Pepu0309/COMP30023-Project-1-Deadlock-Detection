@@ -5,13 +5,12 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <assert.h>
+#include <stdint.h>
 
 #define DOUBLE_CUR_SPACE 2
 
 #define PROCESS_NODE 0
 #define FILE_NODE 1
-
-#define DEADLOCK_DETECTED -1
 
 /* Struct which represents a Resource Allocation Graph node (RAGNode).
  * Contains:
@@ -28,7 +27,7 @@
 typedef struct RAGNode RAGNode_t;
 struct RAGNode {
     int nodeType;
-    unsigned int nodeID;
+    uint32_t nodeID;
 
     /* A process node has a dependency to a file node as it is waiting for it.
      * A file node has a dependency to a process node as it is locked by it.
@@ -41,7 +40,7 @@ struct RAGNode {
 
     bool visited;
 
-    unsigned int numIterationOfDFSCall;
+    uint32_t numIterationOfDFSCall;
 };
 
 /* Struct which is a linked list node that points to it's corresponding RAGNode and has a pointer to the next
@@ -60,8 +59,8 @@ struct hashTableBucket {
     linkedListNode_t *tail;
 };
 
-void visitNode(RAGNode_t *nodeToVisit, int *isDeadlocked, RAGNode_t **nodeInCycle, int currentIterationOfDFS);
+void visitNode(RAGNode_t *nodeToVisit, bool *isDeadlocked, RAGNode_t **nodeInCycle, uint32_t currentIterationOfDFS);
 
-void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, int *processToTerminateID);
+void findSmallestProcessIDToTerminate(RAGNode_t *startNodeInCycle, uint32_t *processToTerminateID);
 
 #endif //COMP30023_PROJECT_1_NODE_H
