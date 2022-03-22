@@ -20,7 +20,8 @@ void sortProcessIDs(uint32_t **deadlockedProcessIDs, uint32_t numDeadlocks) {
     }
 }
 
-void reallocCheckArray(uint32_t **deadlockedProcessIDs, uint32_t *numDeadlocks, uint32_t *curMaxNumProcessIDs) {
+void reallocCheckArray(uint32_t **deadlockedProcessIDs, uint32_t *numDeadlocks,
+                                  uint32_t *curMaxNumProcessIDs) {
     if(*numDeadlocks >= *curMaxNumProcessIDs) {
         *curMaxNumProcessIDs *= 2;
         *deadlockedProcessIDs = (uint32_t *) realloc (*deadlockedProcessIDs, *curMaxNumProcessIDs*sizeof(uint32_t));

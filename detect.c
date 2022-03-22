@@ -28,11 +28,10 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* In process allocation (challenge task), the format is defined differently so special behaviour of the
-     * program is needed, and a standard resource allocation graph isn't used here. */
+    /* In process allocation (challenge task), the files aren't locked so a resource allocation graph cannot
+     * be used here. */
     if(processAllocationFlag) {
-        //Code goes here.
-
+        allocateProcesses(fp);
 
     /* If the process allocation flag (-c) was not given, the program creates the Resource Allocation Graph
      * for Tasks 1-5. */
@@ -180,7 +179,7 @@ void handleDeadlocks(hashTableBucket_t hashTable[]) {
     /* Find the deadlocks according to project spec if execution time flag is not given. */
     uint32_t numDeadlocks = 0;
     /* Create a dynamic array for storing the smallest process ID of each deadlock (cycle). */
-    uint32_t curMaxNumProcessIDs = INITIAL_DEADLOCKED_PROCESSES;
+    uint32_t curMaxNumProcessIDs = DYNAMIC_ARRAY_INITIAL_STORAGE;
     uint32_t *deadlockedProcessIDs = (uint32_t *) malloc (sizeof(uint32_t) * curMaxNumProcessIDs);
     assert(deadlockedProcessIDs != NULL);
 
@@ -193,7 +192,7 @@ void handleDeadlocks(hashTableBucket_t hashTable[]) {
         printf("Deadlock detected\n");
         sortProcessIDs(&deadlockedProcessIDs, numDeadlocks);
         printf("Terminate");
-        for(int i = 0; i < numDeadlocks; i++) {
+        for(uint32_t i = 0; i < numDeadlocks; i++) {
             printf(" %d", deadlockedProcessIDs[i]);
         }
         printf("\n");

@@ -11,7 +11,7 @@ void visitNode(RAGNode_t *nodeToVisit, bool *isDeadlocked, RAGNode_t **nodeInCyc
     if(nodeToVisit->visited == true) {
         /* If the node was visited in the same iteration of DFS call, then a cycle has been found and the node that
          * is part of the cycle is passed back to the detectDeadlocks program through a pointer. */
-        if(nodeToVisit->numIterationOfDFSCall == currentIterationOfDFS) {
+        if(nodeToVisit->numIterationOfDFSCallVisited == currentIterationOfDFS) {
             *isDeadlocked = true;
             *nodeInCycle = nodeToVisit;
         }
@@ -22,7 +22,7 @@ void visitNode(RAGNode_t *nodeToVisit, bool *isDeadlocked, RAGNode_t **nodeInCyc
      * is then marked as visited and marked with an unsigned int representing which iteration of a DFS call
      * the node is visited. */
     nodeToVisit->visited = true;
-    nodeToVisit->numIterationOfDFSCall = currentIterationOfDFS;
+    nodeToVisit->numIterationOfDFSCallVisited = currentIterationOfDFS;
 
     /* There can only potentially be a deadlock if the file a process is waiting for, is locked by another process.
      * It does not matter if a process node is requesting a file node when it is not locked by another file.

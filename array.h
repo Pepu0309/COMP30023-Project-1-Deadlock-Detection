@@ -1,6 +1,8 @@
 #ifndef COMP30023_PROJECT_1_ARRAY_H
 #define COMP30023_PROJECT_1_ARRAY_H
 
+#define DYNAMIC_ARRAY_INITIAL_STORAGE 10
+
 #include <stdlib.h>
 #include <assert.h>
 #include <stdint.h>

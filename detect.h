@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <assert.h>
+#include <inttypes.h>
 
 #define FILENAME_FLAG "-f"
 #define EXECUTION_TIME_FLAG "-e"
@@ -16,6 +17,7 @@
 
 #include "hashtable.h"
 #include "array.h"
+#include "process_allocation.h"
 
 void createResourceAllocationGraph(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,
                                    uint32_t *numFiles);

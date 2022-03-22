@@ -40,7 +40,7 @@ struct RAGNode {
 
     bool visited;
 
-    uint32_t numIterationOfDFSCall;
+    uint32_t numIterationOfDFSCallVisited;
 };
 
 /* Struct which is a linked list node that points to it's corresponding RAGNode and has a pointer to the next
