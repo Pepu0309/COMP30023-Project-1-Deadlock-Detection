@@ -17,9 +17,12 @@
 #include "hashtable.h"
 #include "array.h"
 
-void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,  uint32_t *numFiles);
+void createResourceAllocationGraph(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,
+                                   uint32_t *numFiles);
 
 int calculateExecutionTime(hashTableBucket_t hashTable[]);
+
+void handleDeadlocks(hashTableBucket_t hashTable[]);
 
 void detectDeadlocks(hashTableBucket_t hashTable[], uint32_t **deadlockedProcessIDs, uint32_t *numDeadlocks,
                      uint32_t *curMaxNumProcessIDs);

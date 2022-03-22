@@ -6,28 +6,16 @@ int main(int argc, char **argv) {
     bool executionTimeFlag = false;
     bool processAllocationFlag = false;
 
-    /* The number of nodes can be derived by adding numProcess and numFiles. */
-    uint32_t numProcess = 0;
-    uint32_t numFiles = 0;
-
-    /* Creates a hash table which is an array of linked lists. Initialise the head and tails of the linked
-     * lists to be NULL so they don't point to garbage values. */
-    hashTableBucket_t hashTable[NUM_BUCKETS];
-    for(int i = 0; i < NUM_BUCKETS; i++) {
-        hashTable[i].head = NULL;
-        hashTable[i].tail = NULL;
-    }
+    FILE *fp;
 
     /* Goes through each argument and identifies which argument type they are. */
     for(int i = 0; i < argc; i++){
 
-        /* If the filename flag is given, then the next argument in the argument vector is the filename for
-         * the resource file and that is parsed by calling the parseResourceFile function. */
+        /* If the filename flag is given, then the next argument in the argument vector is the filename/filepath
+         * for the resource file and we create a file pointer to it for use later. */
         if(filenameFlag) {
-            FILE *fp = fopen(argv[i], "r");
-            parseResourceFile(fp, hashTable, &numProcess, &numFiles);
+            fp = fopen(argv[i], "r");
             filenameFlag = false;
-            fclose(fp);
         }
 
         /* Checks which of the 3 flags possible the current argument in argv is. */
@@ -40,58 +28,59 @@ int main(int argc, char **argv) {
         }
     }
 
-    /* Print statistics for task 1 */
-    printf("Processes %d\n", numProcess);
-    printf("Files %d\n", numFiles);
+    /* In process allocation (challenge task), the format is defined differently so special behaviour of the
+     * program is needed, and a standard resource allocation graph isn't used here. */
+    if(processAllocationFlag) {
+        //Code goes here.
 
-    /* If the execution time flag -e was given as an argument, calculate the minimum execution time
-     * of the processes; otherwise, detect deadlocks in the processes. */
-    if(executionTimeFlag) {
-        int minExecutionTime = calculateExecutionTime(hashTable);
-        printf("Execution time %d\n", minExecutionTime);
+
+    /* If the process allocation flag (-c) was not given, the program creates the Resource Allocation Graph
+     * for Tasks 1-5. */
     } else {
-        /* Find the deadlocks according to project spec if execution time flag is not given. */
-        uint32_t numDeadlocks = 0;
-        /* Create a dynamic array for storing the smallest process ID of each deadlock (cycle). */
-        uint32_t curMaxNumProcessIDs = INITIAL_DEADLOCKED_PROCESSES;
-        uint32_t *deadlockedProcessIDs = (uint32_t *)malloc(sizeof(uint32_t) * curMaxNumProcessIDs);
-        assert(deadlockedProcessIDs != NULL);
 
-        detectDeadlocks(hashTable, &deadlockedProcessIDs, &numDeadlocks, &curMaxNumProcessIDs);
+        /* The number of nodes can be derived by adding numProcess and numFiles. */
+        uint32_t numProcess = 0;
+        uint32_t numFiles = 0;
 
-        /* If there is 1 deadlock or more, the smallest process ID for each deadlock found is additionally sorted
-         * using insertion sort such that the process IDs are displayed in ascending order as indicated by
-         * the project spec. */
-        if(numDeadlocks >= 1) {
-            printf("Deadlock detected\n");
-            sortProcessIDs(&deadlockedProcessIDs, numDeadlocks);
-            printf("Terminate");
-            for(int i = 0; i < numDeadlocks; i++) {
-                printf(" %d", deadlockedProcessIDs[i]);
-            }
-            printf("\n");
-        } else {
-            printf("No deadlocks\n");
+        /* Creates a hash table which is an array of linked lists. Initialise the head and tails of the linked
+         * lists to be NULL so they don't point to garbage values. */
+        hashTableBucket_t hashTable[NUM_BUCKETS];
+        for(int i = 0; i < NUM_BUCKETS; i++) {
+            hashTable[i].head = NULL;
+            hashTable[i].tail = NULL;
         }
 
-        free(deadlockedProcessIDs);
+        createResourceAllocationGraph(fp, hashTable, &numProcess, &numFiles);
+
+        /* Print statistics for task 1 */
+        printf("Processes %d\n", numProcess);
+        printf("Files %d\n", numFiles);
+
+        /* If the execution time flag -e was given as an argument, calculate the minimum execution time
+        * of the processes; otherwise, detect deadlocks in the processes. */
+        if(executionTimeFlag) {
+            int minExecutionTime = calculateExecutionTime(hashTable);
+            printf("Execution time %d\n", minExecutionTime);
+        /* At this point, we know that neither the process allocation (-c) or execution time (-e) flags were given
+         * so the program calls helper function handleDeadlocks which does deadlock detection and breaking
+         * deadlocks (Tasks 3-5) and prints the output in the required format. */
+        } else {
+            handleDeadlocks(hashTable);
+        }
+        /* Everything is done, free all the nodes in the hash table. */
+        freeHashTable(hashTable);
     }
 
-    if(processAllocationFlag) {
-        //Challenge task will go here.
-    }
+    fclose(fp);
 
-    /* Everything is done, free all the nodes in the hash table. */
-    freeHashTable(hashTable);
-
-    return 0;
+    return EXIT_SUCCESS;
 }
 
-/* Parses the resource file and creates all the process and file nodes required and stores them in a hash table.
- * Also creates an implicit adjacency list using the dependencyTo attributes of the nodes. */
-void parseResourceFile(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,  uint32_t *numFiles) {
-
-
+/* Parses the resource file and creates all the process and file nodes required for the Resource Allocation Graph and
+ * stores them in a hash table. Also creates an implicit adjacency list using the dependencyTo attributes
+ * of the nodes. */
+void createResourceAllocationGraph(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,
+                                   uint32_t *numFiles) {
 
     uint32_t processID, lockedFileID, requiredFileID;
 
@@ -182,6 +171,37 @@ int calculateExecutionTime(hashTableBucket_t hashTable[]) {
         return maxNumRequests;
     }
 
+}
+
+/* Function that does Deadlock Detection and Breaking Deadlocks (Tasks 3-5) by storing some data required and
+ * calling function detectDeadlocks to find deadlocks and the processes to terminate to break the deadlocks.
+ * Prints output as required by the project specification after solving the necessary tasks. */
+void handleDeadlocks(hashTableBucket_t hashTable[]) {
+    /* Find the deadlocks according to project spec if execution time flag is not given. */
+    uint32_t numDeadlocks = 0;
+    /* Create a dynamic array for storing the smallest process ID of each deadlock (cycle). */
+    uint32_t curMaxNumProcessIDs = INITIAL_DEADLOCKED_PROCESSES;
+    uint32_t *deadlockedProcessIDs = (uint32_t *) malloc (sizeof(uint32_t) * curMaxNumProcessIDs);
+    assert(deadlockedProcessIDs != NULL);
+
+    detectDeadlocks(hashTable, &deadlockedProcessIDs, &numDeadlocks, &curMaxNumProcessIDs);
+
+    /* If there is 1 deadlock or more, the smallest process ID for each deadlock found is additionally sorted
+     * using insertion sort such that the process IDs are displayed in ascending order as indicated by
+     * the project spec. */
+    if(numDeadlocks >= 1) {
+        printf("Deadlock detected\n");
+        sortProcessIDs(&deadlockedProcessIDs, numDeadlocks);
+        printf("Terminate");
+        for(int i = 0; i < numDeadlocks; i++) {
+            printf(" %d", deadlockedProcessIDs[i]);
+        }
+        printf("\n");
+    } else {
+        printf("No deadlocks\n");
+    }
+
+    free(deadlockedProcessIDs);
 }
 
 /* Goes through the hash table and calls the visitNode recursive Depth First Search (DFS) function to find cycles
