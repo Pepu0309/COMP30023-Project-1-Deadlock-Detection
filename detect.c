@@ -240,7 +240,7 @@ void detectDeadlocks(hashTableBucket_t hashTable[], uint32_t **deadlockedProcess
                  * for sorting later. */
                 if(isDeadlocked == true && nodeInCycle != NULL) {
                     findSmallestProcessIDToTerminate(nodeInCycle, &processToTerminateID);
-                    reallocCheckArray(deadlockedProcessIDs, numDeadlocks, curMaxNumProcessIDs);
+                    reallocCheckUnsignedIntArray(deadlockedProcessIDs, *numDeadlocks, curMaxNumProcessIDs);
                     (*deadlockedProcessIDs)[*numDeadlocks] = processToTerminateID;
                     (*numDeadlocks)++;
                 }

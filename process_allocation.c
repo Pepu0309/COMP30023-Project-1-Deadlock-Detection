@@ -8,6 +8,7 @@ void allocateProcesses(FILE *fp) {
 
     uint32_t numProcesses = 0, curMaxNumProcesses = DYNAMIC_ARRAY_INITIAL_STORAGE;
     process_t *processesArray = (process_t *) malloc (curMaxNumProcesses * sizeof(process_t));
+    assert(processesArray != NULL);
 
     uint32_t processID, fileRequestedID1, fileRequestedID2;
 
@@ -20,7 +21,6 @@ void allocateProcesses(FILE *fp) {
     uint32_t executionTimeTick = 0;
     process_t *curProcess;
     while(numFilesFinished != numProcesses) {
-        numFilesFinished = 0;
         for(uint32_t i = 0; i < numProcesses; i++) {
             curProcess = &(processesArray[i]);
             if(curProcess->finishedExecuting == false) {
@@ -33,6 +33,15 @@ void allocateProcesses(FILE *fp) {
                     printf("%u %u %u,%u\n", executionTimeTick, curProcess->processID,
                            curProcess->fileRequestedID1, curProcess->fileRequestedID2);
 
+                    /* Check if there's space for 2 more locked file IDs so we don't have to check again. */
+                    reallocCheckUnsignedIntArray(&curLockedFiles, (numLockedFiles + 2), &curMaxNumLockedFiles);
+
+                    /* This process is assigned the files that it needs and those files are locked for other
+                     * processes. This file is then considered finished executing, though it will take 1
+                     * more time unit to actually finish and release the files (though those files can be
+                     * immediately accessed by another process again at the next time unit). The way
+                     * the executionTimeTick variable is setup to increment accounts for this by adding
+                     * time units at the end, even if all files are "considered finished". */
                     curLockedFiles[numLockedFiles] = curProcess->fileRequestedID1;
                     numLockedFiles++;
 
@@ -43,24 +52,31 @@ void allocateProcesses(FILE *fp) {
                     numFilesFinished++;
 
                 }
-                /* If process is finished executing, add it to the number of files finished. */
-            } else {
-                numFilesFinished++;
             }
         }
         for(int i = 0; i < numLockedFiles; i++) {
-            curLockedFiles[i] = 1000;
+            curLockedFiles[i] = UINT32_MAX;
         }
         numLockedFiles = 0;
 
         executionTimeTick++;
     }
 
+    /* REMEMBER TO SWITCH TO PRIu32 format  */
+    printf("Simulation time %u\n", executionTimeTick);
+
+    free(curLockedFiles);
+    free(processesArray);
 }
 
-void createProcess(process_t **processArray, uint32_t *numProcesses, uint32_t *maxNumProcesses,
+void createProcess(process_t **processArray, uint32_t *numProcesses, uint32_t *curMaxNumProcesses,
                    uint32_t processID, uint32_t fileRequestedID1, uint32_t fileRequestedID2) {
     /* ADD REALLOC CHECK LATER */
+    if(*numProcesses >= *curMaxNumProcesses) {
+        *curMaxNumProcesses *= 2;
+        *processArray= (process_t *) realloc (*processArray, (*curMaxNumProcesses) * sizeof(process_t));
+        assert(processArray != NULL);
+    }
 
     //process_t curProcess = (*processArray)[*numProcesses];
     (*processArray)[*numProcesses].processID = processID;
@@ -71,18 +87,11 @@ void createProcess(process_t **processArray, uint32_t *numProcesses, uint32_t *m
     (*numProcesses)++;
 }
 
-bool inLockedFilesArray(uint32_t *curLockedFiles, uint32_t processIDToSearch, int numLockedFiles) {
+bool inLockedFilesArray(uint32_t *curLockedFiles, uint32_t processIDToSearch, uint32_t numLockedFiles) {
     for(int i = 0; i < numLockedFiles; i++) {
         if(curLockedFiles[i] == processIDToSearch) {
             return true;
         }
     }
     return false;
-}
-
-void removeProcess(process_t **processArray, uint32_t indexToRemove, uint32_t *numProcesses) {
-
-    for(uint32_t i = indexToRemove; i < *numProcesses; i++) {
-        (*processArray)[i] = (*processArray)[i+1];
-    }
 }

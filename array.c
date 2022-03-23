@@ -20,11 +20,12 @@ void sortProcessIDs(uint32_t **deadlockedProcessIDs, uint32_t numDeadlocks) {
     }
 }
 
-void reallocCheckArray(uint32_t **deadlockedProcessIDs, uint32_t *numDeadlocks,
-                                  uint32_t *curMaxNumProcessIDs) {
-    if(*numDeadlocks >= *curMaxNumProcessIDs) {
-        *curMaxNumProcessIDs *= 2;
-        *deadlockedProcessIDs = (uint32_t *) realloc (*deadlockedProcessIDs, *curMaxNumProcessIDs*sizeof(uint32_t));
-        assert(*deadlockedProcessIDs != NULL);
+/* General function that checks whether there is a need to realloc any unsigned int array in the whole program. */
+void reallocCheckUnsignedIntArray(uint32_t **arrayToCheck, uint32_t numElements, uint32_t *curMaxNumElements) {
+    if(numElements >= *curMaxNumElements) {
+        *curMaxNumElements *= 2;
+        *arrayToCheck = (uint32_t *) realloc (*arrayToCheck, (*curMaxNumElements) * sizeof(uint32_t));
+        assert(arrayToCheck != NULL);
     }
 }
+

@@ -19,9 +19,9 @@ typedef struct process{
 
 void allocateProcesses(FILE *fp);
 
-void createProcess(process_t **processArray, uint32_t *numProcesses, uint32_t *maxNumProcesses,
+void createProcess(process_t **processArray, uint32_t *numProcesses, uint32_t *curMaxNumProcesses,
         uint32_t processID, uint32_t fileIDRequested1, uint32_t fileIDRequested2);
 
-bool inLockedFilesArray(uint32_t *curLockedFiles, uint32_t processIDToSearch, int numLockedFiles);
+bool inLockedFilesArray(uint32_t *curLockedFiles, uint32_t processIDToSearch, uint32_t numLockedFiles);
 
 #endif //COMP30023_PROJECT_1_PROCESS_ALLOCATION_H
