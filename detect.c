@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     for(int i = 0; i < argc; i++){
 
         /* If the filename flag is given, then the next argument in the argument vector is the filename/filepath
-         * for the resource file and we create a file pointer to it for use later. */
+         * for the resource file, and we create a file pointer to it for use later. */
         if(filenameFlag) {
             fp = fopen(argv[i], "r");
             filenameFlag = false;
@@ -52,13 +52,13 @@ int main(int argc, char **argv) {
         createResourceAllocationGraph(fp, hashTable, &numProcess, &numFiles);
 
         /* Print statistics for task 1 */
-        printf("Processes %d\n", numProcess);
-        printf("Files %d\n", numFiles);
+        printf("Processes %"PRIu32"\n", numProcess);
+        printf("Files %"PRIu32"\n", numFiles);
 
         /* If the execution time flag -e was given as an argument, calculate the minimum execution time
         * of the processes; otherwise, detect deadlocks in the processes. */
         if(executionTimeFlag) {
-            int minExecutionTime = calculateExecutionTime(hashTable);
+            uint32_t minExecutionTime = calculateExecutionTime(hashTable);
             printf("Execution time %d\n", minExecutionTime);
         /* At this point, we know that neither the process allocation (-c) or execution time (-e) flags were given
          * so the program calls helper function handleDeadlocks which does deadlock detection and breaking
@@ -88,7 +88,7 @@ void createResourceAllocationGraph(FILE *fp, hashTableBucket_t hashTable[], uint
     /* As described by the spec, the format of each line of the input file will always be:
      * processID lockedfileID requiredfileID. Read each line and create all the nodes and link them together
      * according to their dependencies. */
-    while(fscanf(fp, "%u %u %u", &processID, &lockedFileID, &requiredFileID) == 3) {
+    while(fscanf(fp, "%"PRIu32" %"PRIu32" %"PRIu32"", &processID, &lockedFileID, &requiredFileID) == 3) {
 
         /* Processes are distinct, so we don't need to search for duplicates. */
         processNode = createNode(hashTable, processID, PROCESS_NODE);
@@ -142,8 +142,8 @@ Hence, an extra time unit is added to the number of times a file is requested .
 
 Edge case: While the formula works for general cases, the formula does not work when
 the input resource file is blank so that has to be dealt with separately. */
-int calculateExecutionTime(hashTableBucket_t hashTable[]) {
-    int curNumRequests, maxNumRequests = 0;
+uint32_t calculateExecutionTime(hashTableBucket_t hashTable[]) {
+    uint32_t curNumRequests, maxNumRequests = 0;
     linkedListNode_t *curLLNode;
 
     /* Go through all the nodes to determine the max number of requests of any given node (only files matter in
@@ -193,7 +193,7 @@ void handleDeadlocks(hashTableBucket_t hashTable[]) {
         sortProcessIDs(&deadlockedProcessIDs, numDeadlocks);
         printf("Terminate");
         for(uint32_t i = 0; i < numDeadlocks; i++) {
-            printf(" %d", deadlockedProcessIDs[i]);
+            printf(" %"PRIu32"", deadlockedProcessIDs[i]);
         }
         printf("\n");
     } else {

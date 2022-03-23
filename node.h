@@ -36,7 +36,7 @@ struct RAGNode {
 
     /* Used in calculating minimum execution time. The variable determines how many processes are requesting a certain
      * file. This is the n in the formula described in the calculateExecutionTime function. */
-    int numRequests;
+    uint32_t numRequests;
 
     bool visited;
 

@@ -2,7 +2,7 @@
 
 /* Takes the parameters newNodeID and newNodeType to create a new Resource Allocation Graph node (RAGNode) as well
  * as a linked list node that points to it. The linked list node is then inserted in the hash table. */
-RAGNode_t *createNode(hashTableBucket_t hashTable[], unsigned int newNodeID, unsigned int newNodeType) {
+RAGNode_t *createNode(hashTableBucket_t hashTable[], uint32_t newNodeID, uint32_t newNodeType) {
 
     /* Allocate space for the new node and assign the ID and Type. Requests is set to 0 and visited set to false
      * (calloc should do the same but just in case). */

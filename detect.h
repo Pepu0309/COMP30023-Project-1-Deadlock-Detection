@@ -13,8 +13,6 @@
 
 #define ACCESS_TIME_DELAY 1
 
-#define INITIAL_DEADLOCKED_PROCESSES 5
-
 #include "hashtable.h"
 #include "array.h"
 #include "process_allocation.h"
@@ -22,7 +20,7 @@
 void createResourceAllocationGraph(FILE *fp, hashTableBucket_t hashTable[], uint32_t *numProcess,
                                    uint32_t *numFiles);
 
-int calculateExecutionTime(hashTableBucket_t hashTable[]);
+uint32_t calculateExecutionTime(hashTableBucket_t hashTable[]);
 
 void handleDeadlocks(hashTableBucket_t hashTable[]);
 

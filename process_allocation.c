@@ -12,7 +12,7 @@ void allocateProcesses(FILE *fp) {
 
     uint32_t processID, fileRequestedID1, fileRequestedID2;
 
-    while(fscanf(fp, "%u %u %u", &processID, &fileRequestedID1, &fileRequestedID2) == 3) {
+    while(fscanf(fp, "%"PRIu32" %"PRIu32" %"PRIu32"", &processID, &fileRequestedID1, &fileRequestedID2) == 3) {
         createProcess(&processesArray, &numProcesses, &curMaxNumProcesses,
                       processID, fileRequestedID1, fileRequestedID2);
     }
@@ -30,7 +30,7 @@ void allocateProcesses(FILE *fp) {
                 if (inLockedFilesArray(curLockedFiles, curProcess->fileRequestedID1, numLockedFiles) == false &&
                     inLockedFilesArray(curLockedFiles, curProcess->fileRequestedID2, numLockedFiles) == false) {
 
-                    printf("%u %u %u,%u\n", executionTimeTick, curProcess->processID,
+                    printf("%"PRIu32" %"PRIu32" %"PRIu32",%"PRIu32"\n", executionTimeTick, curProcess->processID,
                            curProcess->fileRequestedID1, curProcess->fileRequestedID2);
 
                     /* Check if there's space for 2 more locked file IDs so we don't have to check again. */
@@ -54,7 +54,7 @@ void allocateProcesses(FILE *fp) {
                 }
             }
         }
-        for(int i = 0; i < numLockedFiles; i++) {
+        for(uint32_t i = 0; i < numLockedFiles; i++) {
             curLockedFiles[i] = UINT32_MAX;
         }
         numLockedFiles = 0;
@@ -62,8 +62,7 @@ void allocateProcesses(FILE *fp) {
         executionTimeTick++;
     }
 
-    /* REMEMBER TO SWITCH TO PRIu32 format  */
-    printf("Simulation time %u\n", executionTimeTick);
+    printf("Simulation time %"PRIu32"\n", executionTimeTick);
 
     free(curLockedFiles);
     free(processesArray);
@@ -88,7 +87,7 @@ void createProcess(process_t **processArray, uint32_t *numProcesses, uint32_t *c
 }
 
 bool inLockedFilesArray(uint32_t *curLockedFiles, uint32_t processIDToSearch, uint32_t numLockedFiles) {
-    for(int i = 0; i < numLockedFiles; i++) {
+    for(uint32_t i = 0; i < numLockedFiles; i++) {
         if(curLockedFiles[i] == processIDToSearch) {
             return true;
         }
