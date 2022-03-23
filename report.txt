@@ -1,0 +1,3 @@
+The algorithm allocates files to a process as long as both of the files it requested are not locked already on the
+same time tick. Parallelism is achieved as multiples files can run at the same time. Hence, it performs better than
+naive sequential allocation which has no parallelism.
