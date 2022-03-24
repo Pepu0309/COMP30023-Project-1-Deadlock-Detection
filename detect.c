@@ -49,6 +49,7 @@ int main(int argc, char **argv) {
             hashTable[i].tail = NULL;
         }
 
+
         createResourceAllocationGraph(fp, hashTable, &numProcess, &numFiles);
 
         /* Print statistics for task 1 */

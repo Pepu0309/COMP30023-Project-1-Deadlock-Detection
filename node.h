@@ -7,8 +7,6 @@
 #include <assert.h>
 #include <stdint.h>
 
-#define DOUBLE_CUR_SPACE 2
-
 #define PROCESS_NODE 0
 #define FILE_NODE 1
 

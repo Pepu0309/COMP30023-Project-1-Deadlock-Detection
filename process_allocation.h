@@ -8,13 +8,16 @@
 
 #include "array.h"
 
+/* In process allocation, each process has it's own ID, the ID of both of it's files requested and a boolean
+ * variable which helps the allocateProcess function identify whether the process has had it's files that it
+ * requested allocated or not. */
 typedef struct process{
     uint32_t processID;
 
     uint32_t fileRequestedID1;
     uint32_t fileRequestedID2;
 
-    bool finishedExecuting;
+    bool filesAllocated;
 } process_t;
 
 void allocateProcesses(FILE *fp);
