@@ -77,8 +77,8 @@ void allocateProcesses(FILE *fp) {
         }
         /* "Wipe" the elements in the curLockedFiles array by setting all the locked file IDs in this time tick to a
          * sentinel value UINT32_MAX and setting numLockedFiles to 0. Setting numLockedFiles = 0 should be sufficient
-         * since the inLockedFiles array won't be checking those spaces in the array but setting everything to a
-         * sentinel value improves the safety of the program. */
+         * since the inLockedFilesArray function won't be checking those spaces in the array but setting
+         * everything to a sentinel value improves the safety of the program. */
         for(uint32_t i = 0; i < numLockedFiles; i++) {
             curLockedFiles[i] = UINT32_MAX;
         }
