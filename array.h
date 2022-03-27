@@ -11,6 +11,8 @@
 
 void sortProcessIDs(uint32_t **deadlockedProcessIDs, uint32_t numDeadlocks);
 
+int QSortComparator(const void *a, const void *b);
+
 void reallocCheckUnsignedIntArray(uint32_t **arrayToCheck, uint32_t numElements, uint32_t *curMaxNumElements);
 
 #endif //COMP30023_PROJECT_1_ARRAY_H
