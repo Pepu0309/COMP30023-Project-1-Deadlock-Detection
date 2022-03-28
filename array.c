@@ -5,12 +5,16 @@
  * https://stackoverflow.com/questions/36681906/c-qsort-doesnt-seem-to-work-with-unsigned-long
  * and adapted for use. */
 int QSortComparator(const void *a, const void *b) {
-    /* As the arguments a and b are of type const void * (according to the C requirements to use qsort) type cast
-     * both a and b to pointers of type (const uint32_t *). Then dereference the pointer after the type cast
-     * and store it as a variable of type const_uint32_t to use easily in the next few lines. */
+    /* As the arguments a and b are of type const void * (according to the C requirements for the comparator function
+     * to use qsort), type cast both a and b to pointers of type (const uint32_t *). Then dereference the pointer
+     * after the type cast and store it as a variable of type const_uint32_t x and y to use easily in the
+     * next few lines of comparison instead of having to type cast the variables each time when referring to them. */
     const uint32_t x = *(const uint32_t *)a;
     const uint32_t y = *(const uint32_t *)b;
 
+    /* Return negative number (-1) when x is less than y, positive number (1) when x is more than y, and otherwise
+     * they must be equal and so return 0. This comparator is then used as part of C library qsort function to
+     * sort the deadlocked process IDs. */
     if(x < y) {
         return -1;
     }

@@ -191,8 +191,11 @@ void handleDeadlocks(hashTableBucket_t hashTable[]) {
      * the project spec. */
     if(numDeadlocks >= 1) {
         printf("Deadlock detected\n");
-        //sortProcessIDs(&deadlockedProcessIDs, numDeadlocks);
+
+        /* Use the C library qsort function and provide the necessary arguments to it. QSortComparator can be found
+         * at array.c */
         qsort((void *)deadlockedProcessIDs, numDeadlocks, sizeof(uint32_t), QSortComparator);
+
         printf("Terminate");
         for(uint32_t i = 0; i < numDeadlocks; i++) {
             printf(" %"PRIu32"", deadlockedProcessIDs[i]);
