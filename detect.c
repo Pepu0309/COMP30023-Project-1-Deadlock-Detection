@@ -194,7 +194,7 @@ void handleDeadlocks(hashTableBucket_t hashTable[]) {
 
         /* Use the C library qsort function and provide the necessary arguments to it. QSortComparator can be found
          * at array.c */
-        qsort((void *)deadlockedProcessIDs, numDeadlocks, sizeof(uint32_t), QSortComparator);
+        qsort(deadlockedProcessIDs, numDeadlocks, sizeof(uint32_t), QSortComparator);
 
         printf("Terminate");
         for(uint32_t i = 0; i < numDeadlocks; i++) {
